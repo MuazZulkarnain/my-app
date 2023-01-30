@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [user, setUser] = useState("John Doe");
+  const [user, setUser] = useState("User X");
   const [assetId, setAssetId] = useState("");
   const [owner, setOwner] = useState("");
   const [inputAssetId, setInputAssetId] = useState("");
   const [inputAmount, setInputAmount] = useState(0);
-  const [isTokenizing, setIsTokenizing] = useState(true);
+  const [inputRecipient, setInputRecipient] = useState("");
+  const [activePage, setActivePage] = useState("Tokenize");
 
   const handleTokenize = () => {
     // Perform the tokenization process here.
@@ -22,14 +23,42 @@ function App() {
   };
 
   const handleTransfer = () => {
-    // Perform the transfer process here
+    // Transfer the asset here.
+    setAssetId(inputAssetId);
+    setOwner(inputRecipient);
   };
 
   return (
     <div className="container">
       <h1>Welcome, {user}!</h1>
-      {isTokenizing ? (
-        <>
+      <div className="side-nav">
+        <button
+          className={`side-nav-button ${
+            activePage === "Tokenize" ? "active" : ""
+          }`}
+          onClick={() => setActivePage("Tokenize")}
+        >
+          Tokenize
+        </button>
+        <button
+          className={`side-nav-button ${
+            activePage === "Query" ? "active" : ""
+          }`}
+          onClick={() => setActivePage("Query")}
+        >
+          Query
+        </button>
+        <button
+          className={`side-nav-button ${
+            activePage === "Transfer" ? "active" : ""
+          }`}
+          onClick={() => setActivePage("Transfer")}
+        >
+          Transfer
+        </button>
+      </div>
+      {activePage === "Tokenize" && (
+        <div className="input-form">
           <text>Tokenize your carbon credit:</text>
           <input
             type="number"
@@ -40,37 +69,49 @@ function App() {
           <button onClick={handleTokenize} className="tokenize-button">
             Tokenize
           </button>
-        </>
-      ) : (
-        <>
-          <text>Query your carbon credit:</text>
+        </div>
+      )}
+      {activePage === "Query" && (
+        <div className="input-form">
+          <text>Enter asset ID to query:</text>
           <input
             type="text"
             placeholder="Enter asset ID"
             value={inputAssetId}
             onChange={(e) => setInputAssetId(e.target.value)}
           />
-          <button type="submit" onClick={handleQuery} className="query-button">
+          <button onClick={handleQuery} className="query-button">
             Query
           </button>
-        </>
+        </div>
       )}
-      <hr />
-      <text>Asset ID: {assetId}</text>
-      <text>Owner: {owner}</text>
-      <>
-        <button
-          onClick={() => setIsTokenizing(!isTokenizing)}
-          className="toggle-button"
-        >
-          {isTokenizing ? "Query" : "Tokenize"}
-        </button>
-        {!isTokenizing && assetId !== "" ? (
+      {activePage === "Transfer" && (
+        <div className="input-form">
+          <text>Enter asset ID and recipient ID to transfer:</text>
+          <input
+            type="text"
+            placeholder="Enter asset ID"
+            value={inputAssetId}
+            onChange={(e) => setInputAssetId(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Enter recipient ID"
+            value={inputRecipient}
+            onChange={(e) => setInputRecipient(e.target.value)}
+          />
           <button onClick={handleTransfer} className="transfer-button">
             Transfer
           </button>
-        ) : null}
-      </>
+        </div>
+      )}
+
+      {assetId && (
+        <div className="asset-info">
+          <text>Asset ID: {assetId}</text>
+          <text>Owner: {owner}</text>
+        </div>
+      )}
     </div>
   );
 }
